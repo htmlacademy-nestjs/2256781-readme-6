@@ -1,12 +1,10 @@
 import { Entity } from '@project/shared/core';
-import { StorableEntity, AuthUser, UserRole} from '@project/shared/core';
+import { StorableEntity, AuthUser } from '@project/shared/core';
 
 export class BlogUserEntity extends Entity implements StorableEntity<AuthUser> {
+  public avatar: string;
   public email: string;
-  public firstname: string;
-  public lastname: string;
-  public dateOfBirth: Date;
-  public role: UserRole;
+  public login: string;
   public passwordHash: string;
 
   constructor(user?: AuthUser) {
@@ -20,22 +18,18 @@ export class BlogUserEntity extends Entity implements StorableEntity<AuthUser> {
     }
 
     this.id = this.id ?? '';
+    this.avatar = user.avatar ?? '';
     this.email = user.email;
-    this.dateOfBirth = user.dateOfBirth;
-    this.firstname = user.firstname;
-    this.lastname = user.lastname;
+    this.login = user.login;
     this.passwordHash = user.passwordHash;
-    this.role = user.role;
   }
 
   public toPOJO(): AuthUser {
     return {
       id: this.id,
+      avatar: this.avatar,
       email: this.email,
-      firstname: this.firstname,
-      lastname: this.lastname,
-      dateOfBirth: this.dateOfBirth,
-      role: this.role,
+      login: this.login,
       passwordHash: this.passwordHash,
     }
   }
