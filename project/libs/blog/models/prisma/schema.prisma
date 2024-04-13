@@ -33,6 +33,7 @@ model Post {
   status         PostStatus  @default(posted)
   tags           String[]
   comments       Comment[]
+  likes          Like[]
   createdAt      DateTime    @default(now()) @map("created_at")
   postedAt       DateTime    @default(now()) @map("posted_at")
   isReposted     Boolean     @default(false) @map("is_reposted")
@@ -58,4 +59,15 @@ model Comment {
 
   @@index([postId])
   @@map("comments")
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String   @map("post_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("likes")
 }
