@@ -4,6 +4,19 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+enum PostContent {
+  video
+  photo
+  link
+  quote
+  text
+}
+
+enum PostStatus {
+  posted
+  draft
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,4 +24,24 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Post {
+  id              String      @id @default(uuid())
+  userId          String?     @map("user_id")
+  type            PostContent
+  status          PostStatus  @default(posted)
+  tags            String[]
+  createdAt       DateTime    @default(now()) @map("created_at")
+  postedAt        DateTime    @default(now()) @map("posted_at")
+  isReposted      Boolean     @default(false) @map("is_reposted")
+  originalUserId  String?
+  originalPostId  String?     @map("original_post_id")
+  title           String?
+  content         String?
+  description     String
+  link            String?
+
+  @@index([title])
+  @@map("posts")
 }
