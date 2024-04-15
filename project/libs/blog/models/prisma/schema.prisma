@@ -41,9 +41,10 @@ model Post {
   originalUserId String?
   originalPostId String?     @map("original_post_id")
   title          String?
-  content        String?
-  description    String
+  description    String?
   link           String?
+  quoteAuthor    String?
+  excerpt        String?
 
   @@index([title])
   @@map("posts")

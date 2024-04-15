@@ -10,8 +10,8 @@ const SECOND_USER_ID = 'b39c84dd-9dc5-49c6-8d82-55f86510b1c5 ';
 
 function getLikes() {
   return [
-    { postId: FIRST_POST_UUID, userId: FIRST_USER_ID },
-    { postId: SECOND_POST_UUID, userId: SECOND_USER_ID },
+    { userId: FIRST_USER_ID },
+    { userId: SECOND_USER_ID },
   ];
 }
 
@@ -35,7 +35,7 @@ function getPosts() {
       title: 'Моя рецензия на книгу «Худеющий»',
       userId: FIRST_USER_ID,
       type: PostContent.Text,
-      content: 'Недавно прочитал страшный роман «Худеющий».',
+      excerpt: 'Недавно прочитал страшный роман «Худеющий».',
       description: 'На мой взгляд, это один из самых страшных романов Стивена Кинга.',
       likes: [
         getLikes()[1]
@@ -71,7 +71,7 @@ async function seedDb(prismaClient: PrismaClient) {
   const mockPosts = getPosts();
 
   for (const post of mockPosts) {
-    await prismaClient.post.upsert({
+    await prismaClient.post.create({
       data: {
         id: post.id,
         userId: post.userId,
@@ -87,6 +87,7 @@ async function seedDb(prismaClient: PrismaClient) {
         description: post.description,
         link: post.link,
         quoteAuthor: post.quoteAuthor,
+
       }
     })
   }
