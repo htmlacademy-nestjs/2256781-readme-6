@@ -1,5 +1,5 @@
-import { PostContentList } from './post-type.enum';
-import { PostStatusList } from './post-status.enum';
+import { TPostContentList } from './post-type.enum';
+import { TPostStatusList } from './post-status.enum';
 import { Comment } from '../comment/comment.interface';
 import { Like } from '../like/like.interface';
 
@@ -8,10 +8,10 @@ export interface Post {
   originalId?: string;
   userId?: string;
   authorId?: string;
-  type: PostContentList;
+  type: TPostContentList;
   createdAt?: Date;
   postedAt?: Date;
-  status: PostStatusList;
+  status: TPostStatusList;
   isReposted: boolean;
   tags?: string[];
   likes?: Like[];

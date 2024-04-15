@@ -1,18 +1,30 @@
 import { PrismaClient } from '@prisma/client';
-
-const FIRST_CATEGORY_UUID = '39614113-7ad5-45b6-8093-06455437e1e2';
-const SECOND_CATEGORY_UUID = 'efd775e2-df55-4e0e-a308-58249f5ea202';
+import { PostContent } from '../../../shared/core/src';
 
 const FIRST_POST_UUID = '6d308040-96a2-4162-bea6-2338e9976540';
 const SECOND_POST_UUID = 'ab04593b-da99-4fe3-8b4b-e06d82e2efdd';
+const THIRD_POST_UUID = 'cc38c0dc-750f-4015-8d2e-28f132fc861a';
 
-const FIRST_USER_ID = '658170cbb954e9f5b905ccf4';
-const SECOND_USER_ID = '6581762309c030b503e30512';
+const FIRST_USER_ID = '41d7e142-c8e5-44d3-806e-1d7d1f71fbb9';
+const SECOND_USER_ID = 'b39c84dd-9dc5-49c6-8d82-55f86510b1c5 ';
 
-function getCategories() {
+function getLikes() {
   return [
-    { id: FIRST_CATEGORY_UUID, title: 'Книги' },
-    { id: SECOND_CATEGORY_UUID, title: 'Компьютеры' },
+    { postId: FIRST_POST_UUID, userId: FIRST_USER_ID },
+    { postId: SECOND_POST_UUID, userId: SECOND_USER_ID },
+  ];
+}
+
+function getComments() {
+  return [
+    {
+      message: 'Это действительно отличное видео!',
+      userId: SECOND_USER_ID,
+    },
+    {
+      message: 'Надо будет обязательно пересмотреть. Слишком много информации.',
+      userId: FIRST_USER_ID,
+    }
   ];
 }
 
@@ -20,66 +32,61 @@ function getPosts() {
   return [
     {
       id: FIRST_POST_UUID,
-      title: 'Худеющий',
+      title: 'Моя рецензия на книгу «Худеющий»',
       userId: FIRST_USER_ID,
+      type: PostContent.Text,
       content: 'Недавно прочитал страшный роман «Худеющий».',
       description: 'На мой взгляд, это один из самых страшных романов Стивена Кинга.',
-      categories: {
-        connect: [{ id: FIRST_CATEGORY_UUID }],
-      },
+      likes: [
+        getLikes()[1]
+      ],
     },
     {
       id: SECOND_POST_UUID,
-      title: 'Вы не знаете JavaScript',
-      userId: FIRST_USER_ID,
-      content: 'Полезная книга по JavaScript',
-      description: 'Секреты и тайные знания по JavaScript.',
-      categories: {
-        connect: [
-          { id: FIRST_CATEGORY_UUID },
-          { id: SECOND_CATEGORY_UUID },
-        ]
-      },
+      title: 'Криптография в Node js - Хеширование и шифрование',
+      type: PostContent.Video,
+      link: 'https://www.youtube.com/watch?v=86npYplqO5Q',
+      userId: SECOND_USER_ID,
+      description: 'В этом видео мы рассмотрим криптографию в Node.js: хеширование, шифрование, модуль crypto, а также его методы: createCipher, createCipherIv, createDecipherIv, createHash, randomBytes, scrypt и другие.',
+      tags: ['JS, programming'],
+      likes: [
+        getLikes()[0]
+      ],
       comments: [
-          {
-            message: 'Это действительно отличная книга!',
-            userId: FIRST_USER_ID,
-          },
-          {
-            message: 'Надо будет обязательно перечитать. Слишком много информации.',
-            userId: SECOND_USER_ID,
-          }
+        ...getComments()
       ]
-    }
+    },
+    {
+      id: THIRD_POST_UUID,
+      userId: SECOND_USER_ID,
+      type: PostContent.Quote,
+      quoteAuthor: 'Герман Гессе',
+      description: 'В основном свободу человек проявляет только в выборе зависимости',
+      tags: ['quotes'],
+    },
   ]
 }
 
 async function seedDb(prismaClient: PrismaClient) {
-  const mockCategories = getCategories();
-  for (const category of mockCategories) {
-    await prismaClient.category.upsert({
-      where: { id: category.id },
-      update: {},
-      create: {
-        id: category.id,
-        title: category.title
-      }
-    });
-  }
-
   const mockPosts = getPosts();
+
   for (const post of mockPosts) {
-    await prismaClient.post.create({
+    await prismaClient.post.upsert({
       data: {
         id: post.id,
-        title: post.title,
-        description: post.description,
-        content: post.description,
-        categories: post.categories,
         userId: post.userId,
+        type: post.type,
+        tags: post.tags,
+        likes: post.likes ? {
+          create: post.likes
+        } : undefined,
         comments: post.comments ? {
           create: post.comments
-        } : undefined
+        } : undefined,
+        title: post.title,
+        description: post.description,
+        link: post.link,
+        quoteAuthor: post.quoteAuthor,
       }
     })
   }

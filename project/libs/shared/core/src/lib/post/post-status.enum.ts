@@ -1,6 +1,6 @@
-export const PostStatusType = {
+export const PostStatus = {
   Posted: 'posted',
   Draft: 'draft',
 } as const;
 
-export type PostStatusList = typeof PostStatusType[keyof typeof PostStatusType];
+export type TPostStatusList = typeof PostStatus[keyof typeof PostStatus];
