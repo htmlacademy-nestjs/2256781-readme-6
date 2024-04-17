@@ -8,10 +8,10 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 
-import { BlogModule } from './app/blog.module';
+import { AppModule } from './app/blog.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(BlogModule);
+  const app = await NestFactory.create(AppModule);
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('The «Blog» service')

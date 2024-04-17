@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
+import { BlogConfigModule } from '@project/blog-config';
 
 @Module({
-  imports: [],
+  imports: [
+    BlogConfigModule
+  ],
   controllers: [],
   providers: [],
   exports: [],
 })
-export class BlogModule {}
+export class AppModule { }
