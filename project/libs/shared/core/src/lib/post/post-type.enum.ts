@@ -1,4 +1,4 @@
-export const PostContentType = {
+export const PostContent = {
   Video: 'video',
   Photo: 'photo',
   Link: 'link',
@@ -6,4 +6,4 @@ export const PostContentType = {
   Text: 'text'
 } as const;
 
-export type PostContentList = typeof PostContentType[keyof typeof PostContentType];
+export type TPostContentList = typeof PostContent[keyof typeof PostContent];

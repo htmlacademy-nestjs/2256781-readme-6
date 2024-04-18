@@ -16,5 +16,6 @@ import { AccountConfigModule, getMongooseOptions } from '@project/account-config
   ],
   controllers: [],
   providers: [],
+  exports: [],
 })
-export class AppModule {}
+export class AppModule { }
