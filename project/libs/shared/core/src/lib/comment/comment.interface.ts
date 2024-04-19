@@ -1,6 +1,6 @@
 export interface Comment {
   id?: string;
-  postId?: string;
+  postId: string;
   userId: string;
   message: string;
   createdAt?: Date;
