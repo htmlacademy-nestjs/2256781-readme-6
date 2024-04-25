@@ -5,5 +5,3 @@ export const PostContent = {
   Quote: 'quote',
   Text: 'text'
 } as const;
-
-export type TPostContentList = typeof PostContent[keyof typeof PostContent];

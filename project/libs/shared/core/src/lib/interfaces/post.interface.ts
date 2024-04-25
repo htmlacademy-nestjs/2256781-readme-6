@@ -1,7 +1,7 @@
-import { TPostContentList } from './post-type.enum';
-import { TPostStatusList } from './post-status.enum';
-import { Comment } from '../comment/comment.interface';
-import { Like } from '../like/like.interface';
+import { TPostContentList } from '../types/post-type.type';
+import { TPostStatusList } from '../types/post-status.type';
+import { Comment } from './comment.interface';
+import { Like } from './like.interface';
 
 export interface Post {
   id?: string;
