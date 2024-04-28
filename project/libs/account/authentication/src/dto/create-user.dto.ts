@@ -1,13 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsISO8601, IsString } from 'class-validator';
+import { IsEmail, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
-import { AuthenticationValidateMessage } from '../authentication-module/authentication.constant';
+import { AuthenticationValidateMessage, LoginLength, PasswordLength } from '../authentication-module/authentication.constant';
 
 export class CreateUserDto {
   @ApiProperty({
     description: 'User\'s avatar',
     example: 'https://assets.htmlacademy.ru/previews/779/20230522_f0b2228f-150.jpg'
   })
+  @IsString()
+  @IsOptional()
   public avatar?: string;
 
   @ApiProperty({
@@ -21,6 +23,9 @@ export class CreateUserDto {
     description: 'User\'s login name',
     example: 'Keks Ivanov',
   })
+  @IsString()
+  @MinLength(LoginLength.Min)
+  @MaxLength(LoginLength.Max)
   public login: string;
 
   @ApiProperty({
@@ -28,5 +33,7 @@ export class CreateUserDto {
     example: '123456'
   })
   @IsString()
+  @MinLength(PasswordLength.Min)
+  @MaxLength(PasswordLength.Max)
   public password: string;
 }

@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import { JwtService } from '@nestjs/jwt';
 import {
   ConflictException,
@@ -7,22 +6,24 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-  UnauthorizedException
+  UnauthorizedException,
+  Inject,
+  BadRequestException,
 } from '@nestjs/common';
-import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 
 import { BlogUserRepository, BlogUserEntity } from '@project/blog-user';
-import { Token, TokenPayload, User, UserRole } from '@project/shared/core';
+import { Token, TokenPayload, User } from '@project/shared/core';
 
 import { CreateUserDto } from '../dto/create-user.dto';
 import { LoginUserDto } from '../dto/login-user.dto';
-import { dbConfig } from '@project/account-config';
+import { dbConfig, jwtConfig } from '@project/account-config';
 import {
   AUTH_USER_EXISTS,
   AUTH_USER_NOT_FOUND,
   AUTH_USER_PASSWORD_WRONG
 } from './authentication.constant';
+import { ChangePasswordUserDto } from '../dto/change-password.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -30,10 +31,14 @@ export class AuthenticationService {
 
   constructor(
     private readonly blogUserRepository: BlogUserRepository,
-    private readonly jwtService: JwtService,
-  ) {}
+
     @Inject(dbConfig.KEY)
     private readonly databaseConfig: ConfigType<typeof dbConfig>,
+
+    private readonly jwtService: JwtService,
+
+    @Inject(jwtConfig.KEY)
+    private readonly jwtOptions: ConfigType<typeof jwtConfig>,
   ) { }
 
   public async register(dto: CreateUserDto): Promise<BlogUserEntity> {
@@ -62,8 +67,8 @@ export class AuthenticationService {
     return userEntity;
   }
 
-  public async verifyUser(dto: LoginUserDto) {
-    const {email, password} = dto;
+  public async verifyUser(dto: LoginUserDto): Promise<BlogUserEntity> {
+    const { email, password } = dto;
     const existUser = await this.blogUserRepository.findByEmail(email);
 
     if (!existUser) {
@@ -77,23 +82,44 @@ export class AuthenticationService {
     return existUser;
   }
 
-  public async getUser(id: string) {
+  public async getUser(id: string): Promise<BlogUserEntity> {
     const user = await this.blogUserRepository.findById(id);
 
-    if(! user) {
+    if (!user) {
       throw new NotFoundException(AUTH_USER_NOT_FOUND);
     }
 
     return user;
   }
 
+  public async getUserByEmail(email: string): Promise<BlogUserEntity> {
+    const user = await this.blogUserRepository.findByEmail(email);
+
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+
+    return user;
+  }
+
+  public async changePassword(dto: ChangePasswordUserDto): Promise<BlogUserEntity> {
+    const { password, newPassword, userId } = dto;
+    const user = await this.blogUserRepository.findById(userId);
+
+    if (!await user.comparePassword(password)) {
+      throw new BadRequestException(AUTH_USER_PASSWORD_WRONG);
+    }
+
+    const userEntity = await user.setPassword(newPassword);
+
+    return await this.blogUserRepository.update(userId, userEntity);
+  }
+
   public async createUserToken(user: User): Promise<Token> {
     const payload: TokenPayload = {
       sub: user.id,
       email: user.email,
-      role: user.role,
-      lastname: user.lastname,
-      firstname: user.firstname,
+      login: user.login,
     };
 
     try {

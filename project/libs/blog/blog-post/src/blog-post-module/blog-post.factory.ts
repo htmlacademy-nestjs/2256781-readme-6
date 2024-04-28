@@ -4,7 +4,6 @@ import { EntityFactory, Post } from '@project/shared/core';
 
 import { BlogPostEntity } from './blog-post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
-import { BlogCategoryEntity } from '@project/blog-category';
 
 @Injectable()
 export class BlogPostFactory implements EntityFactory<BlogPostEntity> {
@@ -12,9 +11,8 @@ export class BlogPostFactory implements EntityFactory<BlogPostEntity> {
     return new BlogPostEntity(entityPlainData);
   }
 
-  public static createFromCreatePostDto(dto: CreatePostDto, categories: BlogCategoryEntity[]): BlogPostEntity {
+  public static createFromCreatePostDto(dto: CreatePostDto): BlogPostEntity {
     const entity = new BlogPostEntity();
-    entity.categories = categories;
     entity.title = dto.title;
     entity.description = dto.description;
     entity.content = dto.content;

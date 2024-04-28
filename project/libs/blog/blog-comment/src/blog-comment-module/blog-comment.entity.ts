@@ -3,7 +3,7 @@ import { Comment, Entity, StorableEntity } from '@project/shared/core';
 export class BlogCommentEntity extends Entity implements StorableEntity<Comment> {
   public createdAt: Date;
   public updatedAt: Date;
-  public postId?: string;
+  public postId: string;
   public message: string;
   public userId: string;
 

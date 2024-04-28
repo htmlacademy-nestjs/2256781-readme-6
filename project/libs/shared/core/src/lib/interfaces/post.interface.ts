@@ -5,9 +5,9 @@ import { Like } from './like.interface';
 
 export interface Post {
   id?: string;
-  originalId?: string;
   userId?: string;
-  authorId?: string;
+  originalPostId?: string;
+  originalUserId?: string;
   type: TPostContentList;
   createdAt?: Date;
   postedAt?: Date;

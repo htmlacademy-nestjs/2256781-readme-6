@@ -1,6 +1,4 @@
-import { Expose, Type } from 'class-transformer';
-
-import { CategoryRdo } from '@project/blog-category';
+import { Expose } from 'class-transformer';
 
 export class BlogPostRdo {
   @Expose()
@@ -20,10 +18,6 @@ export class BlogPostRdo {
 
   @Expose()
   public userId: string;
-
-  @Expose()
-  @Type(() => CategoryRdo)
-  public categories: CategoryRdo[];
 
   @Expose()
   public comments: Comment[]

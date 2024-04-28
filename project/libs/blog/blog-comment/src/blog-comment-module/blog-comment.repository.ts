@@ -39,7 +39,7 @@ export class BlogCommentRepository extends BasePostgresRepository<BlogCommentEnt
   }
 
   public async deleteById(id: string): Promise<void> {
-    await this.client.category.delete({
+    await this.client.comment.delete({
       where: {
         id,
       }
