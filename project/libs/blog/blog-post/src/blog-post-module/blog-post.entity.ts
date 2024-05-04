@@ -76,7 +76,7 @@ export class BlogPostEntity extends Entity implements StorableEntity<Post> {
       tags: this.tags,
       // TODO: Доделать лайки
       // см. ниже как сделан comments
-      likes: this.likes,
+      likes: [],
       likesCount: this.likesCount,
       comments: this.comments.map((commentEntity) => commentEntity.toPOJO()),
       commentsCount: this.commentsCount,
