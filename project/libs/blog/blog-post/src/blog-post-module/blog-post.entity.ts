@@ -1,5 +1,6 @@
 import { Entity, Post, StorableEntity, TPostContentList, TPostStatusList } from '@project/shared/core';
 import { BlogCommentEntity, BlogCommentFactory } from '@project/blog-comment';
+import { BlogLikeEntity, BlogLikeFactory } from '@project/blog-like';
 
 export class BlogPostEntity extends Entity implements StorableEntity<Post> {
   public userId?: string;
@@ -11,9 +12,7 @@ export class BlogPostEntity extends Entity implements StorableEntity<Post> {
   public status: TPostStatusList;
   public isReposted: boolean;
   public tags?: string[];
-  // TODO: Доделать лайки здесь тип BlogLikeEntity[] должен быть, Не []
-  // такую библиотеку ещё не создал blog-like
-  public likes: [];
+  public likes: BlogLikeEntity[];
   public likesCount?: number;
   public comments: BlogCommentEntity[];
   public commentsCount?: number;
@@ -49,12 +48,11 @@ export class BlogPostEntity extends Entity implements StorableEntity<Post> {
       this.comments.push(blogCommentEntity);
     }
 
-    // TODO: Доделать лайки
-    // const blogLikeFactory = new BlogL;
-    // for (const comment of post.comments) {
-    //   const blogCommentEntity = blogCommentFactory.create(comment);
-    //   this.comments.push(blogCommentEntity);
-    // }
+    const blogLikeFactory = new BlogLikeFactory();
+    for (const like of post.likes) {
+      const blogLikeEntity = blogLikeFactory.create(like);
+      this.likes.push(blogLikeEntity);
+    }
 
     this.likesCount = this.likes.length;
     this.commentsCount = this.comments.length;
@@ -74,9 +72,7 @@ export class BlogPostEntity extends Entity implements StorableEntity<Post> {
       status: this.status,
       isReposted: this.isReposted,
       tags: this.tags,
-      // TODO: Доделать лайки
-      // см. ниже как сделан comments
-      likes: [],
+      likes: this.likes.map((likeEntity) => likeEntity.toPOJO()),
       likesCount: this.likesCount,
       comments: this.comments.map((commentEntity) => commentEntity.toPOJO()),
       commentsCount: this.commentsCount,

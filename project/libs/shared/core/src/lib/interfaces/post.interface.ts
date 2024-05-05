@@ -1,7 +1,7 @@
 import { TPostContentList } from '../types/post-type.type';
 import { TPostStatusList } from '../types/post-status.type';
 import { Comment } from './comment.interface';
-// import { Like } from './like.interface';
+import { Like } from './like.interface';
 
 export interface Post {
   id?: string;
@@ -14,7 +14,7 @@ export interface Post {
   status: TPostStatusList;
   isReposted: boolean;
   tags?: string[];
-  likes?: [];
+  likes?: Like[];
   likesCount?: number;
   comments?: Comment[];
   commentsCount?: number;
