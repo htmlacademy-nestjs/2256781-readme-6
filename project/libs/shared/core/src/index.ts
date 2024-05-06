@@ -11,6 +11,8 @@ export { EntityFactory } from './lib/interfaces/entity-factory.interface';
 export { PaginationResult } from './lib/interfaces/pagination.interface';
 export { Token } from './lib/interfaces/token.interface';
 export { TokenPayload } from './lib/interfaces/token-payload.interface';
+export { File } from './lib/types/file.interface';
+export { StoredFile } from './lib/types/stored-file.interface';
 export { RequestWithTokenPayload } from './lib/interfaces/request-with-token-payload.interface';
 
 export { TGenericPost } from './lib/types/post-pack.type';
