@@ -1,4 +1,9 @@
 import { ClassTransformOptions, plainToInstance } from 'class-transformer';
+import dayjs from 'dayjs';
+
+export const getDate = () => {
+  return dayjs().toISOString();
+}
 
 export function fillDto<T, V>(
   DtoClass: new () => T,
