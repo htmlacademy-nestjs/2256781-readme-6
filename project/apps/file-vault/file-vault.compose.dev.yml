@@ -16,7 +16,7 @@ services:
     volumes:
       - readme.mongo.file-vault:/data/db
 
-  typeoteka.file-vault.mongo.ui:
+  readme.file-vault.mongo.ui:
     image: mongo-express:1.0-20
     restart: always
     container_name: readme.file-vault.mongo.ui
