@@ -1,6 +1,6 @@
 version: '3.9'
 services:
-  readme.notify.fakesmtp:
+  readme.notification.fakesmtp:
     image: gessnerfl/fake-smtp-server:2.2.0
     container_name: "readme.notify.fakesmtp"
     hostname: "readme.notify.fakesmtp"
