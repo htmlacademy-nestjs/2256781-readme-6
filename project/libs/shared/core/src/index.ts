@@ -21,3 +21,4 @@ export { PostStatus } from './lib/enums/post-status.enum';
 export { TPostContentList } from './lib/types/post-type.type';
 export { PostContent } from './lib/enums/post-type.enum';
 export { SortDirection } from './lib/enums/sort-direction.enum';
+export { RabbitRouting } from './lib/types/rabbit-routing.enum';
