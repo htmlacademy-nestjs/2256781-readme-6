@@ -1,4 +1,4 @@
-import { ArrayNotEmpty, IsArray, IsNotEmpty,IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class UpdatePostDto {
   @IsString()
@@ -15,10 +15,4 @@ export class UpdatePostDto {
   @IsNotEmpty()
   @IsOptional()
   public content?: string;
-
-  @IsUUID('all', { each: true })
-  @IsArray()
-  @ArrayNotEmpty()
-  @IsOptional()
-  public categories?: string[];
 }

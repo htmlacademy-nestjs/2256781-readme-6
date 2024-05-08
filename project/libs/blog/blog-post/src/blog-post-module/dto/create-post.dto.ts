@@ -1,10 +1,7 @@
 import {
-  ArrayNotEmpty,
-  IsArray,
   IsMongoId,
   IsNotEmpty,
   IsString,
-  IsUUID
 } from 'class-validator';
 
 export class CreatePostDto {
@@ -23,9 +20,4 @@ export class CreatePostDto {
   @IsString()
   @IsMongoId()
   public userId: string;
-
-  @IsUUID('all', { each: true })
-  @IsArray()
-  @ArrayNotEmpty()
-  public categories: string[];
 }

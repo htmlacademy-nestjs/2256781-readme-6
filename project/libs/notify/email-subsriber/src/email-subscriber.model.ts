@@ -10,22 +10,18 @@ import { Subscriber } from '@project/shared/core';
   toObject: { virtuals: true }
 })
 export class EmailSubscriberModel extends Document implements Subscriber {
+  public id?: string;
+
   @Prop({
     required: true,
   })
   public email: string;
 
-  @Prop({
-    required: true
-  })
-  public firstname: string;
+  @Prop()
+  public login?: string;
 
-  @Prop({
-    required: true
-  })
-  public lastname: string;
-
-  public id?: string;
+  @Prop()
+  public userId?: string;
 }
 
 export const EmailSubscriberSchema = SchemaFactory.createForClass(EmailSubscriberModel);
