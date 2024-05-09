@@ -13,10 +13,12 @@ import {
 } from '@nestjs/common';
 
 import { BlogUserRepository, BlogUserEntity } from '@project/blog-user';
-import { Token, TokenPayload, User } from '@project/shared/core';
+import { Token, User } from '@project/shared/core';
+import { createJWTPayload } from '@project/shared/helpers';
 
 import { CreateUserDto } from '../dto/create-user.dto';
 import { LoginUserDto } from '../dto/login-user.dto';
+import { RefreshTokenService } from '../refresh-token-module/refresh-token.service';
 import { dbConfig, jwtConfig } from '@project/account-config';
 import {
   AUTH_USER_EXISTS,
@@ -39,6 +41,8 @@ export class AuthenticationService {
 
     @Inject(jwtConfig.KEY)
     private readonly jwtOptions: ConfigType<typeof jwtConfig>,
+
+    private readonly refreshTokenService: RefreshTokenService,
   ) { }
 
   public async register(dto: CreateUserDto): Promise<BlogUserEntity> {
@@ -106,15 +110,13 @@ export class AuthenticationService {
   }
 
   public async createUserToken(user: User): Promise<Token> {
-    const payload: TokenPayload = {
-      sub: user.id,
-      email: user.email,
-      login: user.login,
-    };
+    const accessTokenPayload = createJWTPayload(user);
+    const refreshTokenPayload = { ...accessTokenPayload, tokenId: crypto.randomUUID() };
+    await this.refreshTokenService.createRefreshSession(refreshTokenPayload);
 
     try {
-      const accessToken = await this.jwtService.signAsync(payload);
-      const refreshToken = await this.jwtService.signAsync(payload, {
+      const accessToken = await this.jwtService.signAsync(accessTokenPayload);
+      const refreshToken = await this.jwtService.signAsync(refreshTokenPayload, {
         secret: this.jwtOptions.refreshTokenSecret,
         expiresIn: this.jwtOptions.refreshTokenExpiresIn
       });
