@@ -92,16 +92,6 @@ export class AuthenticationService {
     return user;
   }
 
-  public async getUserByEmail(email: string): Promise<BlogUserEntity> {
-    const user = await this.blogUserRepository.findByEmail(email);
-
-    if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
-    }
-
-    return user;
-  }
-
   public async changePassword(dto: ChangePasswordUserDto): Promise<BlogUserEntity> {
     const { password, newPassword, userId } = dto;
     const user = await this.blogUserRepository.findById(userId);
@@ -135,5 +125,15 @@ export class AuthenticationService {
       this.logger.error('[Token generation error]: ' + error.message);
       throw new HttpException('Ошибка при создании токена.', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  public async getUserByEmail(email: string): Promise<BlogUserEntity> {
+    const user = await this.blogUserRepository.findByEmail(email);
+
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+
+    return user;
   }
 }
