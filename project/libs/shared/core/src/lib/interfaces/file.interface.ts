@@ -1,10 +1,11 @@
 export interface File {
   id?: string;
-  title: string;
-  hash: string;
+  originalName: string;
+  subDirectory: string;
   size: number;
-  link: string;
   mimetype: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  hashName: string;
+  path: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
