@@ -1,3 +1,4 @@
+import crypto from 'node:crypto'
 import { JwtService } from '@nestjs/jwt';
 import { ConfigType } from '@nestjs/config';
 import {
