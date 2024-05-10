@@ -21,7 +21,7 @@ export class AuthenticationController {
   constructor(
     private readonly authService: AuthenticationService,
     private readonly notifyService: NotifyService,
-  ) {}
+  ) { }
 
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -53,6 +53,7 @@ export class AuthenticationController {
   @Post('login')
   public async login(@Req() { user }: RequestWithUser) {
     const userToken = await this.authService.createUserToken(user);
+    console.log({ user, userToken });
     return fillDto(LoggedUserRdo, { ...user.toPOJO(), ...userToken });
   }
 
