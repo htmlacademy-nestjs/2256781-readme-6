@@ -12,4 +12,4 @@ import { BlogUserModel, BlogUserSchema } from './blog-user.model';
   providers: [BlogUserRepository, BlogUserFactory],
   exports: [BlogUserRepository],
 })
-export class BlogUserModule {}
+export class BlogUserModule { }

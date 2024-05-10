@@ -14,6 +14,8 @@ export { TokenPayload } from './lib/interfaces/token-payload.interface';
 export { StoredFile } from './lib/interfaces/stored-file.interface';
 export { RequestWithTokenPayload } from './lib/interfaces/request-with-token-payload.interface';
 export { Subscriber } from './lib/interfaces/subscriber.interface';
+export { JwtToken } from './lib/interfaces/jwt-token.interface';
+export { RefreshTokenPayload } from './lib/interfaces/refresh-token-payload.interface';
 
 export { TGenericPost } from './lib/types/post-pack.type';
 export { TPostStatusList } from './lib/types/post-status.type';

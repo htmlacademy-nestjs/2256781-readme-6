@@ -19,7 +19,8 @@ export abstract class BaseMongoRepository<
       return null;
     }
 
-    return this.entityFactory.create(document.toObject({ versionKey: false }) as ReturnType<T['toPOJO']>);
+    const plainObject = document.toObject({ getters: true, versionKey: false, flattenObjectIds: true })  as ReturnType<T['toPOJO']>;
+    return this.entityFactory.create(plainObject);
   }
 
   public async findById(id: T['id']): Promise<T> {

@@ -1,22 +1,25 @@
+import crypto from 'node:crypto'
 import { JwtService } from '@nestjs/jwt';
+import { ConfigType } from '@nestjs/config';
 import {
   ConflictException,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
   UnauthorizedException,
-  Inject,
   BadRequestException,
 } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
 
 import { BlogUserRepository, BlogUserEntity } from '@project/blog-user';
-import { Token, TokenPayload, User } from '@project/shared/core';
+import { Token, User } from '@project/shared/core';
+import { createJWTPayload } from '@project/shared/helpers';
 
 import { CreateUserDto } from '../dto/create-user.dto';
 import { LoginUserDto } from '../dto/login-user.dto';
+import { RefreshTokenService } from '../refresh-token-module/refresh-token.service';
 import { dbConfig, jwtConfig } from '@project/account-config';
 import {
   AUTH_USER_EXISTS,
@@ -39,6 +42,8 @@ export class AuthenticationService {
 
     @Inject(jwtConfig.KEY)
     private readonly jwtOptions: ConfigType<typeof jwtConfig>,
+
+    private readonly refreshTokenService: RefreshTokenService,
   ) { }
 
   public async register(dto: CreateUserDto): Promise<BlogUserEntity> {
@@ -92,16 +97,6 @@ export class AuthenticationService {
     return user;
   }
 
-  public async getUserByEmail(email: string): Promise<BlogUserEntity> {
-    const user = await this.blogUserRepository.findByEmail(email);
-
-    if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
-    }
-
-    return user;
-  }
-
   public async changePassword(dto: ChangePasswordUserDto): Promise<BlogUserEntity> {
     const { password, newPassword, userId } = dto;
     const user = await this.blogUserRepository.findById(userId);
@@ -116,18 +111,32 @@ export class AuthenticationService {
   }
 
   public async createUserToken(user: User): Promise<Token> {
-    const payload: TokenPayload = {
-      sub: user.id,
-      email: user.email,
-      login: user.login,
-    };
+    const accessTokenPayload = createJWTPayload(user);
+    const refreshTokenPayload = { ...accessTokenPayload, tokenId: crypto.randomUUID() };
+    await this.refreshTokenService.createRefreshSession(refreshTokenPayload);
 
     try {
-      const accessToken = await this.jwtService.signAsync(payload);
-      return { accessToken };
+      const accessToken = await this.jwtService.signAsync(accessTokenPayload);
+      const refreshToken = await this.jwtService.signAsync(refreshTokenPayload, {
+        secret: this.jwtOptions.refreshTokenSecret,
+        expiresIn: this.jwtOptions.refreshTokenExpiresIn
+      });
+
+      return { accessToken, refreshToken };
+
     } catch (error) {
       this.logger.error('[Token generation error]: ' + error.message);
       throw new HttpException('Ошибка при создании токена.', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  public async getUserByEmail(email: string): Promise<BlogUserEntity> {
+    const user = await this.blogUserRepository.findByEmail(email);
+
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+
+    return user;
   }
 }

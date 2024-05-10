@@ -7,7 +7,7 @@ export class LoggedUserRdo {
     example: '134ce8babd-cc30-4805-9b12-d9420398e7c5',
   })
   @Expose()
-  public userId: string;
+  public id: string;
 
   @ApiProperty({
     description: 'user\'s email',
@@ -22,4 +22,10 @@ export class LoggedUserRdo {
   })
   @Expose()
   public accessToken: string;
+
+  @ApiProperty({
+    description: 'user\'s refresh token',
+  })
+  @Expose()
+  public refreshToken: string;
 }
