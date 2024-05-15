@@ -28,7 +28,7 @@ export abstract class BaseMemoryRepository<T extends Entity & StorableEntity<Ret
     return entity;
   }
 
-  public async update(id: T['id'], entity: T): Promise<T> {
+  public async updateById(id: T['id'], entity: T): Promise<T> {
     if (! this.entities.has(entity.id)) {
       throw new Error('Entity not found');
     }

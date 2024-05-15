@@ -4,6 +4,7 @@ export class EmailSubscriberEntity extends Entity implements StorableEntity<Subs
   public email: string;
   public login?: string;
   public userId?: string;
+  public dateOfNotification?: string;
 
   constructor (subscriber?: Subscriber) {
     super();
@@ -27,6 +28,7 @@ export class EmailSubscriberEntity extends Entity implements StorableEntity<Subs
       email: this.email,
       login: this.login,
       userId: this.userId,
+      dateOfNotification: this.dateOfNotification,
     }
   }
 }

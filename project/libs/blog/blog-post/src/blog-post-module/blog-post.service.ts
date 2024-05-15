@@ -1,91 +1,101 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { PaginationResult } from '@project/shared/core';
-import { BlogCategoryService } from '@project/blog-category';
-import {
-  BlogCommentRepository,
-  CreateCommentDto,
-  BlogCommentEntity,
-  BlogCommentFactory
-} from '@project/blog-comment';
 
 import { BlogPostRepository } from './blog-post.repository';
-import { CreatePostDto } from './dto/create-post.dto';
+import { TPostDto } from './dto/create-post.dto';
 import { BlogPostEntity } from './blog-post.entity';
-import { BlogPostQuery } from './blog-post.query';
+import { BlogCommonQuery } from './query/blog-post.common-query';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { BlogPostFactory } from './blog-post.factory';
+import { PostError } from './blog-post.constant';
+import { BlogTitleQuery } from './query/blog-post.title-query';
 
 
 @Injectable()
 export class BlogPostService {
   constructor(
-    private readonly blogPostRepository: BlogPostRepository,
-    private readonly blogCategoryService: BlogCategoryService,
-    private readonly blogCommentRepository: BlogCommentRepository,
-    private readonly blogCommentFactory: BlogCommentFactory,
-  ) {}
+    private readonly postRepository: BlogPostRepository,
+  ) { }
 
-  public async getAllPosts(query?: BlogPostQuery): Promise<PaginationResult<BlogPostEntity>> {
-    return this.blogPostRepository.find(query);
-  }
-
-  public async createPost(dto: CreatePostDto): Promise<BlogPostEntity> {
-    const categories = await this.blogCategoryService.getCategoriesByIds(dto.categories);
-    const newPost = BlogPostFactory.createFromCreatePostDto(dto, categories);
-    await this.blogPostRepository.save(newPost);
+  public async createPost(dto: TPostDto): Promise<BlogPostEntity> {
+    const newPost = BlogPostFactory.createFromPostDto(dto);
+    await this.postRepository.save(newPost);
 
     return newPost;
   }
 
-  public async deletePost(id: string): Promise<void> {
-    try {
-      await this.blogPostRepository.deleteById(id);
-    } catch {
+  public async deletePost(id: string, userId: string): Promise<void> {
+    const deletingPost = await this.getPostById(id);
+
+    if (deletingPost?.userId === userId) {
+      await this.postRepository.deleteById(id);
+    } else {
       throw new NotFoundException(`Post with ID ${id} not found`);
     }
   }
 
-  public async getPost(id: string): Promise<BlogPostEntity> {
-    return this.blogPostRepository.findById(id);
+  public async getPostById(id: string): Promise<BlogPostEntity> {
+    return this.postRepository.findById(id);
   }
 
-  public async updatePost(id: string, dto: UpdatePostDto): Promise<BlogPostEntity> {
-    const existsPost = await this.blogPostRepository.findById(id);
-    let isSameCategories = true;
+  public async getNews(): Promise<BlogPostEntity[]> {
+    return this.postRepository.findNews();
+  }
+
+  public async getUserPostsCount(id: string): Promise<number> {
+    return this.postRepository.getPostCount({ userId: id });
+  }
+
+  public async getAllPostsByCommonQuery(query?: BlogCommonQuery): Promise<PaginationResult<BlogPostEntity>> {
+    return this.postRepository.findByCommonQuery(query);
+  }
+
+  public async updatePost(id: string, dto: UpdatePostDto, userId: string): Promise<BlogPostEntity> {
+    const existsPost = await this.postRepository.findById(id);
+
+    if (existsPost?.userId !== userId) {
+      throw new NotFoundException(`You can't update post with ID ${id}`);
+    }
+
     let hasChanges = false;
 
     for (const [key, value] of Object.entries(dto)) {
-      if (value !== undefined && key !== 'categories' && existsPost[key] !== value) {
+      if (value !== undefined && existsPost[key] !== value) {
         existsPost[key] = value;
         hasChanges = true;
       }
-
-      if (key === 'categories' && value) {
-        const currentCategoryIds = existsPost.categories.map((category) => category.id);
-        isSameCategories = currentCategoryIds.length === value.length &&
-          currentCategoryIds.some((categoryId) => value.includes(categoryId));
-
-        if (! isSameCategories) {
-          existsPost.categories = await this.blogCategoryService.getCategoriesByIds(dto.categories);
-        }
-      }
     }
 
-    if (isSameCategories && ! hasChanges) {
+    if (!hasChanges) {
       return existsPost;
     }
 
-    await this.blogPostRepository.update(existsPost);
-
-    return existsPost;
+    return this.postRepository.update(id, existsPost);
   }
 
-  public async addComment(postId: string, dto: CreateCommentDto): Promise<BlogCommentEntity> {
-    const existsPost = await this.getPost(postId);
-    const newComment = this.blogCommentFactory.createFromDto(dto, existsPost.id);
-    await this.blogCommentRepository.save(newComment);
+  public async rePost(id: string, userId: string): Promise<BlogPostEntity> {
+    const post = await this.postRepository.findById(id);
 
-    return newComment;
+    if (post.isReposted) {
+      throw new BadRequestException(PostError.AlreadyReposted)
+    }
+
+    post.userId = userId;
+    post.isReposted = true;
+    post.originalPostId = post.id;
+    post.originalUserId = post.userId;
+
+    await this.postRepository.save(post);
+
+    return post;
+  }
+
+  async getUnpublishedUserPosts(userId: string): Promise<BlogPostEntity[]> {
+    return this.postRepository.findUnpublishedUserPosts(userId);
+  }
+
+  async getPostsByTitle(search: BlogTitleQuery): Promise<BlogPostEntity[]> {
+    return this.postRepository.findByTitleQuery(search);
   }
 }

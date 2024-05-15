@@ -1,3 +1,6 @@
-import { PostStatus } from '../enums/post-status.enum';
+export const PostStatusValue = {
+  Posted: 'posted',
+  Draft: 'draft',
+} as const;
 
-export type TPostStatusList = typeof PostStatus[keyof typeof PostStatus];
+export type TPostStatusList = typeof PostStatusValue[keyof typeof PostStatusValue];

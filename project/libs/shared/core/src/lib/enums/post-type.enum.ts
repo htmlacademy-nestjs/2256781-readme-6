@@ -1,7 +1,7 @@
-export const PostContent = {
-  Video: 'video',
-  Photo: 'photo',
-  Link: 'link',
-  Quote: 'quote',
-  Text: 'text'
-} as const;
+export enum PostContent {
+    video = 'video',
+    text = 'text',
+    quote = 'quote',
+    photo = 'photo',
+    link = 'link',
+}

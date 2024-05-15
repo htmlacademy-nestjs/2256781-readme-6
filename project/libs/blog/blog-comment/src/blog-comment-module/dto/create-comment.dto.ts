@@ -1,12 +1,12 @@
-import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
-import { BlogCommentValidateMessage } from '../blog-comment.constant';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { CommentValidateMessage } from '../blog-comment.constant';
 
 export class CreateCommentDto {
   @IsString()
-  @IsNotEmpty({ message: BlogCommentValidateMessage.MessageIsEmpty })
-  public message: string;
+  @IsNotEmpty({ message: CommentValidateMessage.InvalidPostId })
+  public postId: string;
 
   @IsString()
-  @IsMongoId({ message: BlogCommentValidateMessage.InvalidID })
-  public userId: string;
+  @IsNotEmpty({ message: CommentValidateMessage.MessageIsEmpty })
+  public message: string;
 }

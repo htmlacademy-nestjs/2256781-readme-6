@@ -7,7 +7,9 @@ import { PrismaClientService } from '@project/blog-models';
 
 import { BlogPostEntity } from './blog-post.entity';
 import { BlogPostFactory } from './blog-post.factory';
-import { BlogPostQuery } from './blog-post.query';
+import { BlogCommonQuery } from './query/blog-post.common-query';
+import { PostStatusValue } from 'libs/shared/core/src/lib/types/post-status.type';
+import { BlogTitleQuery } from './query/blog-post.title-query';
 
 @Injectable()
 export class BlogPostRepository extends BasePostgresRepository<BlogPostEntity, Post> {
@@ -18,18 +20,18 @@ export class BlogPostRepository extends BasePostgresRepository<BlogPostEntity, P
     super(entityFactory, client)
   }
 
-  private async getPostCount(where: Prisma.PostWhereInput): Promise<number> {
-    return this.client.post.count({ where });
-  }
-
   private calculatePostsPage(totalCount: number, limit: number): number {
     return Math.ceil(totalCount / limit);
+  }
+
+  public async getPostCount(where: Prisma.PostWhereInput): Promise<number> {
+    return this.client.post.count({ where });
   }
 
   public async save(entity: BlogPostEntity): Promise<BlogPostEntity> {
     const record = await this.client.post.create({
       data: {
-        ...entity.toPOJO(),
+        ...entity,
         comments: {
           connect: [],
         },
@@ -63,7 +65,7 @@ export class BlogPostRepository extends BasePostgresRepository<BlogPostEntity, P
       },
       include: {
         comments: true,
-        // likes: true,
+        likes: true,
       }
     });
 
@@ -75,12 +77,10 @@ export class BlogPostRepository extends BasePostgresRepository<BlogPostEntity, P
   }
 
   public async update(id: string, entity: BlogPostEntity): Promise<BlogPostEntity> {
-    const pojoEntity = entity.toPOJO();
-
     const record = await this.client.post.update({
       where: { id: entity.id },
       data: {
-        ...pojoEntity,
+        ...entity,
         comments: {
           connect: [],
         },
@@ -88,14 +88,14 @@ export class BlogPostRepository extends BasePostgresRepository<BlogPostEntity, P
       },
       include: {
         comments: true,
-        likes: false,
+        likes: true,
       },
     });
 
     return this.createEntityFromDocument(record);
   }
 
-  public async find(query?: BlogPostQuery): Promise<PaginationResult<BlogPostEntity>> {
+  public async findByCommonQuery(query?: BlogCommonQuery): Promise<PaginationResult<BlogPostEntity>> {
     const skip = query?.page && query?.limit ? (query.page - 1) * query.limit : undefined;
     const take = query?.limit;
     const where: Prisma.PostWhereInput = {};
@@ -122,5 +122,63 @@ export class BlogPostRepository extends BasePostgresRepository<BlogPostEntity, P
       itemsPerPage: take,
       totalItems: postCount,
     }
+  }
+
+  public async findUnpublishedUserPosts(userId: string): Promise<BlogPostEntity[]> {
+    const records = await this.client.post.findMany({
+      where: {
+        userId,
+        status: PostStatusValue.Draft,
+      },
+      include: {
+        comments: true,
+        likes: true,
+      },
+    });
+
+    return records.map((record) => this.createEntityFromDocument(record));
+  }
+
+  public async findByTitleQuery({ title, limit }: BlogTitleQuery): Promise<BlogPostEntity[]> {
+    const records = await this.client.post.findMany({
+      where: {
+        title: {
+          contains: title
+        },
+      },
+      take: limit,
+      include: {
+        comments: true,
+        likes: true,
+        _count: {
+          select: {
+            comments: true,
+            likes: true
+          },
+        },
+      },
+    });
+
+    return records.map(({ _count, ...record }) => this.createEntityFromDocument({ ...record, commentsCount: _count.comments, likesCount: _count.likes }));
+  }
+
+  public async findNews(): Promise<BlogPostEntity[]> {
+    const records = await this.client.post.findMany({
+      where: {
+        status: PostStatusValue.Posted,
+      },
+      include: {
+        comments: true,
+        likes: true,
+        _count: {
+          select: {
+            comments: true,
+            likes: true
+          },
+        },
+      },
+    });
+
+    return records.map(({ _count, ...record }) => this.createEntityFromDocument({ ...record, commentsCount: _count.comments, likesCount: _count.likes }));
   }
 }

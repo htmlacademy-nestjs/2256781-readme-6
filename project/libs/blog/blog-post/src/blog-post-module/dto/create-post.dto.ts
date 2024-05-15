@@ -1,23 +1,17 @@
-import {
-  IsMongoId,
-  IsNotEmpty,
-  IsString,
-} from 'class-validator';
+import { PostContent } from '@project/shared/core';
 
-export class CreatePostDto {
-  @IsString()
-  @IsNotEmpty()
-  public title: string;
+import { CreateLinkPostDto } from './link-post.dto';
+import { CreatePhotoPostDto } from './photo-post.dto';
+import { CreateVideoPostDto } from './video-post.dto';
+import { CreateQuotePostDto } from './quote-post.dto';
+import { CreateTextPostDto } from './text-post.dto';
 
-  @IsString()
-  @IsNotEmpty()
-  public description: string;
+export type TPostDto = CreateLinkPostDto | CreatePhotoPostDto | CreateQuotePostDto | CreateTextPostDto | CreateVideoPostDto;
 
-  @IsString()
-  @IsNotEmpty()
-  public content: string;
-
-  @IsString()
-  @IsMongoId()
-  public userId: string;
+export const PostTypeDto = {
+  [PostContent.video]: CreateVideoPostDto,
+  [PostContent.text]: CreateTextPostDto,
+  [PostContent.link]: CreateLinkPostDto,
+  [PostContent.photo]: CreatePhotoPostDto,
+  [PostContent.quote]: CreateQuotePostDto
 }
