@@ -22,6 +22,9 @@ export class EmailSubscriberModel extends Document implements Subscriber {
 
   @Prop()
   public userId?: string;
+
+  @Prop()
+  public dateOfNotification?: string;
 }
 
 export const EmailSubscriberSchema = SchemaFactory.createForClass(EmailSubscriberModel);

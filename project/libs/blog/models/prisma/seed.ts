@@ -34,7 +34,7 @@ function getPosts() {
       id: FIRST_POST_UUID,
       title: 'Моя рецензия на книгу «Худеющий»',
       userId: FIRST_USER_ID,
-      type: PostContent.Text,
+      type: PostContent.text,
       excerpt: 'Недавно прочитал страшный роман «Худеющий».',
       description: 'На мой взгляд, это один из самых страшных романов Стивена Кинга.',
       likes: [
@@ -44,7 +44,7 @@ function getPosts() {
     {
       id: SECOND_POST_UUID,
       title: 'Криптография в Node js - Хеширование и шифрование',
-      type: PostContent.Video,
+      type: PostContent.video,
       link: 'https://www.youtube.com/watch?v=86npYplqO5Q',
       userId: SECOND_USER_ID,
       description: 'В этом видео мы рассмотрим криптографию в Node.js: хеширование, шифрование, модуль crypto, а также его методы: createCipher, createCipherIv, createDecipherIv, createHash, randomBytes, scrypt и другие.',
@@ -59,7 +59,7 @@ function getPosts() {
     {
       id: THIRD_POST_UUID,
       userId: SECOND_USER_ID,
-      type: PostContent.Quote,
+      type: PostContent.quote,
       quoteAuthor: 'Герман Гессе',
       description: 'В основном свободу человек проявляет только в выборе зависимости',
       tags: ['quotes'],

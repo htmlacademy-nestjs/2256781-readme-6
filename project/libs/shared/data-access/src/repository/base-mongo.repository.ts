@@ -37,7 +37,7 @@ export abstract class BaseMongoRepository<
     return entity;
   }
 
-  public async update(id: T['id'], entity: T): Promise<T> {
+  public async updateById(id: T['id'], entity: T): Promise<T> {
     const updatedDocument = await this.model.findByIdAndUpdate(
       id,
       entity.toPOJO(),

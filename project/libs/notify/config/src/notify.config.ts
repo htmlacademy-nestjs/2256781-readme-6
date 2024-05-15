@@ -5,7 +5,7 @@ const DEFAULT_PORT = 3003;
 const DEFAULT_MONGO_PORT = 27017;
 const ENVIRONMENTS = ['development', 'production', 'stage'] as const;
 const DEFAULT_RABBIT_PORT = 5672;
-const DEFAULT_SMTP_PORT = 25;
+const DEFAULT_SMTP_PORT = 8025;
 
 type Environment = typeof ENVIRONMENTS[number];
 

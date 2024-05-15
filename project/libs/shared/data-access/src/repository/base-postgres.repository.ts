@@ -20,15 +20,15 @@ DocumentType = ReturnType<T['toPOJO']>
     return this.entityFactory.create(document as ReturnType<T['toPOJO']>);
   }
 
-  public async findById(id: T['id']): Promise<T> {
-    throw new Error('Not implemented');
-  }
-
   public async save(entity: T): Promise<T> {
     throw new Error('Not implemented');
   }
 
-  public async update(id: T['id'], entity: T): Promise<T> {
+  public async findById(id: T['id']): Promise<T> {
+    throw new Error('Not implemented');
+  }
+
+  public async updateById(id: T['id'], entity: T): Promise<T> {
     throw new Error('Not implemented');
   }
 

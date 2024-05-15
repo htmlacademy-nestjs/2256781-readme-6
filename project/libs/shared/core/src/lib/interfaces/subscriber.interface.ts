@@ -3,4 +3,5 @@ export interface Subscriber {
   email: string;
   login?: string;
   userId?: string;
+  dateOfNotification?: string;
 }

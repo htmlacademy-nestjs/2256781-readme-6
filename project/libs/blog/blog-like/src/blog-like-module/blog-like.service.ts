@@ -19,11 +19,11 @@ export class BlogLikeService {
 
     const likeEntity = new BlogLikeEntity().populate({ postId, userId })
 
-    return await this.likeRepository.create(likeEntity);
+    return this.likeRepository.create(likeEntity);
   }
 
   public async findByPostId(postId: string): Promise<BlogLikeEntity[]> {
-    return await this.likeRepository.findByPostId(postId);
+    return this.likeRepository.findByPostId(postId);
   }
 
   public async deleteLike(postId: string, userId: string): Promise<void> {

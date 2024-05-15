@@ -1,20 +1,27 @@
 import { Entity, Post, StorableEntity, TPostContentList, TPostStatusList } from '@project/shared/core';
 import { BlogCommentEntity, BlogCommentFactory } from '@project/blog-comment';
 import { BlogLikeEntity, BlogLikeFactory } from '@project/blog-like';
+import { PostContentValue } from 'libs/shared/core/src/lib/types/post-type.type';
+import { PostStatusValue } from 'libs/shared/core/src/lib/types/post-status.type';
 
 export class BlogPostEntity extends Entity implements StorableEntity<Post> {
   public userId?: string;
-  public originalPostId?: string;
-  public originalUserId?: string;
-  public type: TPostContentList;
+  public type?: TPostContentList;
+  public status?: TPostStatusList;
+  public tags?: string[];
+  public comments: BlogCommentEntity[];
+  public likes: BlogLikeEntity[];
   public createdAt?: Date;
   public postedAt?: Date;
-  public status: TPostStatusList;
   public isReposted: boolean;
-  public tags?: string[];
-  public likes: BlogLikeEntity[];
+  public originalUserId?: string;
+  public originalPostId?: string;
+  public title?: string;
+  public description?: string;
+  public link?: string;
+  public quoteAuthor?: string;
+  public excerpt?: string;
   public likesCount?: number;
-  public comments: BlogCommentEntity[];
   public commentsCount?: number;
 
   constructor(post?: Post) {
@@ -22,24 +29,29 @@ export class BlogPostEntity extends Entity implements StorableEntity<Post> {
     this.populate(post);
   }
 
-  public populate(post?: Post): BlogPostEntity | null {
+  public populate(post?: Post) {
     if (!post) {
       return;
     }
 
     this.id = post.id ?? undefined;
-    this.userId = post.userId ?? undefined;
-    this.originalPostId = post.originalPostId ?? undefined;
-    this.originalUserId = post.originalUserId ?? undefined;
-    this.type = post.type;
+    this.userId = post.userId;
+    this.type = post.type ?? PostContentValue.Text;
+    this.status = post.status ?? PostStatusValue.Draft;
+    this.tags = post.tags ?? [];
+    this.comments = [];
+    this.likes = [];
     this.createdAt = post.createdAt ?? undefined;
     this.postedAt = post.postedAt ?? undefined;
-    this.status = post.status;
     this.isReposted = post.isReposted ?? undefined;
-    this.tags = post.tags ?? [];
-    this.likes = [];
+    this.originalUserId = post.originalUserId ?? undefined;
+    this.originalPostId = post.originalPostId ?? undefined;
+    this.title = post.title ?? undefined;
+    this.description = post.description ?? undefined;
+    this.link = post.link ?? undefined;
+    this.quoteAuthor = post.quoteAuthor ?? undefined;
+    this.excerpt = post.excerpt ?? undefined;
     this.likesCount = post.likesCount ?? 0;
-    this.comments = [];
     this.commentsCount = post.commentsCount ?? 0;
 
     const blogCommentFactory = new BlogCommentFactory();
@@ -56,25 +68,28 @@ export class BlogPostEntity extends Entity implements StorableEntity<Post> {
 
     this.likesCount = this.likes.length;
     this.commentsCount = this.comments.length;
-
-    return this;
   }
 
   public toPOJO(): Post {
     return {
       id: this.id,
       userId: this.userId,
-      originalPostId: this.originalPostId,
-      originalUserId: this.originalUserId,
       type: this.type,
+      status: this.status,
+      tags: this.tags,
+      comments: this.comments.map((commentEntity) => commentEntity.toPOJO()),
+      likes: this.likes.map((likeEntity) => likeEntity.toPOJO()),
       createdAt: this.createdAt,
       postedAt: this.postedAt,
-      status: this.status,
       isReposted: this.isReposted,
-      tags: this.tags,
-      likes: this.likes.map((likeEntity) => likeEntity.toPOJO()),
+      originalUserId: this.originalUserId,
+      originalPostId: this.originalPostId,
+      title: this.title,
+      description: this.description,
+      link: this.link,
+      quoteAuthor: this.quoteAuthor,
+      excerpt: this.excerpt,
       likesCount: this.likesCount,
-      comments: this.comments.map((commentEntity) => commentEntity.toPOJO()),
       commentsCount: this.commentsCount,
     }
   }

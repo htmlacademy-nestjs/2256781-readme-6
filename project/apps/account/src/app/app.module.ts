@@ -9,12 +9,12 @@ import { NotifyModule } from '@project/account-notify';
 @Module({
   imports: [
     BlogUserModule,
-    AuthenticationModule,
     AccountConfigModule,
+    AuthenticationModule,
+    NotifyModule,
     MongooseModule.forRootAsync(
       getMongooseOptions()
     ),
-    NotifyModule,
   ],
   controllers: [],
   providers: [],

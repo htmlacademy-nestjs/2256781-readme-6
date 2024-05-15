@@ -107,7 +107,7 @@ export class AuthenticationService {
 
     const userEntity = await user.setPassword(newPassword);
 
-    return await this.blogUserRepository.update(userId, userEntity);
+    return this.blogUserRepository.updateById(userId, userEntity);
   }
 
   public async createUserToken(user: User): Promise<Token> {
